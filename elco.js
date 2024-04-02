@@ -239,12 +239,12 @@ async function tempValues(obj,path,stateDescription){
     return true;
 }
 
-getRemoconData();
+await getRemoconData();
 
-schedule({"time":{"start":"06:00","end":"01:30","mode":"hours","interval":1},"period":{"days":1}}, async function(){
+schedule('0 * * * *' , () => {
+    log(`${scriptName} - Remocon schedule`);
     
-        const k = await getRemoconData();
-
+    getRemoconData().then(k => {
         if(k === false){
             sendTo('telegram.0', {text: 'Fehler bei Elco Script...mal nach schauen', disable_notification: true});
             count_fails++;
@@ -252,6 +252,8 @@ schedule({"time":{"start":"06:00","end":"01:30","mode":"hours","interval":1},"pe
                 stopScript("");
             }
         }
-    return true;
-    
+    }).catch(error => {
+        // Hier können Sie Fehlerbehandlungslogik hinzufügen
+        log(`${scriptName} - ${error}`);
+    });
 });
